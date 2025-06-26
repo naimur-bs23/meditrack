@@ -64,11 +64,12 @@
 - [ ] Hash passwords with bcrypt
 - [ ] Secure sensitive routes with auth/role middleware
 - [ ] Use helmet & rate-limiting middleware
+
 ---
 
 ## 📄 Phase 7: Documentation
 
-- [ ] API documentation (Postman collection or Swagger)
+- [x] API documentation (Swagger)
 - [ ] Set up README with installation instructions
 
 ---

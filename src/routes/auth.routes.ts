@@ -26,13 +26,18 @@ const authRouter = Router();
  *             properties:
  *               name:
  *                 type: string
+ *                 example: John Doe
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: john@email.com
  *               password:
  *                 type: string
+ *                 example: p@ssword1234
  *               role:
  *                 type: string
- *                 enum: [doctor, pharmacist, patient]
+ *                 enum: [PATIENT, PHARMACIST, DOCTOR, ADMIN]
+ *                 example: PATIENT
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -60,8 +65,10 @@ authRouter.post('/register', register);
  *               email:
  *                 type: string
  *                 format: email
+ *                 example: john@email.com
  *               password:
  *                 type: string
+ *                 example: p@ssword1234
  *     responses:
  *       200:
  *         description: Successful login, returns JWT token
