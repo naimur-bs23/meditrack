@@ -1,16 +1,16 @@
 import {Request, Response, NextFunction} from "express";
 
-export function authorize(allowRoles: string[]) {
-    return (req: Request, res: Response, next: NextFunction) => {
+export const authorize = (allowRoles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction): void => {
         const user = (req as any).user;
         if (!user) {
-            return res.status(401).json({ message: 'Unauthorized: No user found' });
+            res.status(401).json({ message: 'Unauthorized: No user found' });
+            return;
         }
-
         if(!allowRoles.includes(user.role)) {
-            return res.status(403).json({ message: 'Forbidden: Invalid role' });
+            res.status(403).json({ message: 'Forbidden: Invalid role' });
+            return;
         }
-
         next();
     }
 }

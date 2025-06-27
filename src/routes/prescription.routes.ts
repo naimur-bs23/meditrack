@@ -6,29 +6,53 @@ import {
     updatePrescription,
     deletePrescription
 } from '../controllers/prescription.controller';
+import {authenticate} from "../middleware/authenticate";
+import {authorize} from "../middleware/authorize";
+import {UserRole} from "../models/user.model";
 
 const prescriptionRouter = Router();
+
+// Use Authentication middleware
+prescriptionRouter.use(authenticate);
 
 /**
  * @swagger
  * tags:
  *   name: Prescriptions
  *   description: Prescription endpoints
- */
-
-/**
- * @swagger
+ *
  * components:
  *   schemas:
- *     Prescription:
+ *     PrescriptionRequest:
  *       type: object
  *       required:
- *         - doctorId
  *         - patientId
  *         - medicineList
  *         - dosage
  *         - instructions
  *         - date
+ *       properties:
+ *         patientId:
+ *           type: integer
+ *           example: 1
+ *         medicineList:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["Paracetamol", "Amoxicillin"]
+ *         dosage:
+ *           type: string
+ *           example: "2 tablets twice a day"
+ *         instructions:
+ *           type: string
+ *           example: "Take after meals"
+ *         date:
+ *           type: string
+ *           format: date
+ *           example: "2025-06-27"
+ *
+ *     Prescription:
+ *       type: object
  *       properties:
  *         id:
  *           type: integer
@@ -66,14 +90,18 @@ const prescriptionRouter = Router();
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Prescription'
+ *             $ref: '#/components/schemas/PrescriptionRequest'
  *     responses:
  *       201:
  *         description: Prescription created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Prescription'
  *       500:
  *         description: Server error
  */
-prescriptionRouter.post('/', createPrescription);
+prescriptionRouter.post('/', authorize([UserRole.DOCTOR]), createPrescription);
 
 /**
  * @swagger
@@ -140,7 +168,7 @@ prescriptionRouter.get('/:id', getPrescriptionById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Prescription'
+ *             $ref: '#/components/schemas/PrescriptionRequest'
  *     responses:
  *       200:
  *         description: Prescription updated
@@ -149,7 +177,7 @@ prescriptionRouter.get('/:id', getPrescriptionById);
  *       500:
  *         description: Server error
  */
-prescriptionRouter.put('/:id', updatePrescription);
+prescriptionRouter.put('/:id', authorize([UserRole.DOCTOR]), updatePrescription);
 
 /**
  * @swagger
@@ -172,6 +200,6 @@ prescriptionRouter.put('/:id', updatePrescription);
  *       500:
  *         description: Server error
  */
-prescriptionRouter.delete('/:id', deletePrescription);
+prescriptionRouter.delete('/:id', authorize([UserRole.DOCTOR, UserRole.ADMIN]), deletePrescription);
 
 export default prescriptionRouter;

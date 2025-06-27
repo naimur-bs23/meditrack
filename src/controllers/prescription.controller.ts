@@ -1,55 +1,93 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Prescription } from '../models/prescription.model';
-import { User } from '../models/user.model';
+import { User, UserRole } from '../models/user.model';
+import { PrescriptionRequest } from "../requests/prescription.request";
+import { AuthenticatedRequest } from '../middleware/authenticate';
 
-export const createPrescription = async (req: Request, res: Response): Promise<void> => {
+interface PrescriptionWhereClause {
+    doctorId?: number;
+    patientId?: number;
+    id?: number;
+}
+
+export const createPrescription = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<void> => {
     try {
-        const {
-            doctorId,
-            patientId,
-            medicineList,
-            dosage,
-            instructions,
-            date
-        } = req.body;
+        const prescriptionData: PrescriptionRequest = {
+            ...req.body,
+            doctorId: req.user?.id
+        };
 
-        const prescription = await Prescription.create({
-            doctorId,
-            patientId,
-            medicineList,
-            dosage,
-            instructions,
-            date,
-        });
-
+        const prescription = await Prescription.create({...prescriptionData});
         res.status(201).json({ message: 'Prescription created', prescription });
-    } catch (err: any) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
     }
 };
 
-export const getAllPrescriptions = async (_req: Request, res: Response): Promise<void> => {
+export const getAllPrescriptions = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<void> => {
     try {
+        const whereClause: PrescriptionWhereClause = {};
+        
+        if (req.user?.role === UserRole.DOCTOR) {
+            whereClause.doctorId = req.user.id;
+        } else if (req.user?.role === UserRole.PATIENT) {
+            whereClause.patientId = req.user.id;
+        }
+
         const prescriptions = await Prescription.findAll({
+            where: {...whereClause},
             include: [
-                { model: User, as: 'doctor', attributes: ['id', 'name', 'email', 'role'] },
-                { model: User, as: 'patient', attributes: ['id', 'name', 'email', 'role'] },
+                { 
+                    model: User, 
+                    as: 'doctor', 
+                    attributes: ['id', 'name', 'email', 'role'] 
+                },
+                { 
+                    model: User, 
+                    as: 'patient', 
+                    attributes: ['id', 'name', 'email', 'role'] 
+                },
             ],
         });
 
         res.json(prescriptions);
-    } catch (err: any) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
     }
 };
 
-export const getPrescriptionById = async (req: Request, res: Response): Promise<void> => {
+export const getPrescriptionById = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<void> => {
     try {
-        const { id } = req.params;
-        const prescription = await Prescription.findByPk(id, {
+        const whereClause: PrescriptionWhereClause = { id: Number(req.params.id) };
+        
+        if (req.user?.role === UserRole.DOCTOR) {
+            whereClause.doctorId = req.user.id;
+        } else if (req.user?.role === UserRole.PATIENT) {
+            whereClause.patientId = req.user.id;
+        }
+
+        const prescription = await Prescription.findOne({
+            where: {...whereClause},
             include: [
-                { model: User, as: 'doctor', attributes: ['id', 'name', 'email', 'role'] },
-                { model: User, as: 'patient', attributes: ['id', 'name', 'email', 'role'] },
+                { 
+                    model: User, 
+                    as: 'doctor', 
+                    attributes: ['id', 'name', 'email', 'role'] 
+                },
+                { 
+                    model: User, 
+                    as: 'patient', 
+                    attributes: ['id', 'name', 'email', 'role'] 
+                },
             ],
         });
 
@@ -59,48 +97,46 @@ export const getPrescriptionById = async (req: Request, res: Response): Promise<
         }
 
         res.json(prescription);
-    } catch (err: any) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
     }
 };
 
-export const updatePrescription = async (req: Request, res: Response): Promise<void> => {
+export const updatePrescription = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<void> => {
     try {
-        const { id } = req.params;
-        const {
-            doctorId,
-            patientId,
-            medicineList,
-            dosage,
-            instructions,
-            date,
-        } = req.body;
+        const prescription = await Prescription.findOne({
+            where: { 
+                id: Number(req.params.id),
+                doctorId: req.user?.id
+            }
+        });
 
-        const prescription = await Prescription.findByPk(id);
         if (!prescription) {
             res.status(404).json({ message: 'Prescription not found' });
             return;
         }
 
-        await prescription.update({
-            doctorId,
-            patientId,
-            medicineList,
-            dosage,
-            instructions,
-            date,
-        });
-
-        res.json({ message: 'Prescription updated', prescription });
-    } catch (err: any) {
-        res.status(500).json({ error: err.message });
+        const updatedPrescription = await prescription.update(req.body);
+        res.json({ message: 'Prescription updated', prescription: updatedPrescription });
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
     }
 };
 
-export const deletePrescription = async (req: Request, res: Response): Promise<void> => {
+export const deletePrescription = async (
+    req: AuthenticatedRequest,
+    res: Response
+): Promise<void> => {
     try {
-        const { id } = req.params;
-        const prescription = await Prescription.findByPk(id);
+        const prescription = await Prescription.findOne({
+            where: { 
+                id: Number(req.params.id),
+                doctorId: req.user?.id
+            }
+        });
 
         if (!prescription) {
             res.status(404).json({ message: 'Prescription not found' });
@@ -108,8 +144,8 @@ export const deletePrescription = async (req: Request, res: Response): Promise<v
         }
 
         await prescription.destroy();
-        res.json({ message: 'Prescription deleted' });
-    } catch (err: any) {
-        res.status(500).json({ error: err.message });
+        res.json({ message: 'Prescription deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
     }
 };

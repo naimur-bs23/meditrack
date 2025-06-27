@@ -15,6 +15,20 @@ const options: swaggerJSDoc.Options = {
                 url: 'http://localhost:3000/api', // Adjust if needed
             },
         ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: []
+            }
+        ],
     },
     apis: ['src/routes/**/*.ts'], // Only your route files (where swagger comments live)
 };

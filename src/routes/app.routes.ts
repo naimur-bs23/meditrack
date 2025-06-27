@@ -5,6 +5,6 @@ import prescriptionRouter from "./prescription.routes";
 const appRouter = Router();
 
 appRouter.use('/auth', authRouter);
-appRouter.use('prescriptions', prescriptionRouter);
+appRouter.use('/prescriptions', prescriptionRouter);
 
 export default appRouter;
