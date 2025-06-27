@@ -119,7 +119,9 @@ export const updatePrescription = async (
             return;
         }
 
-        const updatedPrescription = await prescription.update(req.body);
+        const prescriptionData: PrescriptionRequest = { ...req.body, doctorId: req.user?.id };
+
+        const updatedPrescription = await prescription.update(prescriptionData);
         res.json({ message: 'Prescription updated', prescription: updatedPrescription });
     } catch (error) {
         res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
