@@ -31,22 +31,22 @@
 
 ## 🧾 Phase 3: Prescription Management
 
-- [x] Prescription model (doctor_id, patient_id, medicine_list, dosage, start_date, end_date, notes)
+- [x] Prescription model (doctor_id, patient_id, medicine_list, date)
 - [x] `POST /prescriptions` – Create prescription (doctor only)
-- [x] `GET /prescriptions/:id` – View prescription (doctor, patient, pharmacist)
+- [x] `GET /prescriptions/:id` – View prescription for logged-in user
 - [x] `GET /prescriptions` – List prescriptions for logged-in user
 - [x] `PUT /prescriptions/:id` – Update prescription (doctor only)
-- [x] `DELETE /prescriptions/:id` – Delete prescription (optional)
+- [x] `DELETE /prescriptions/:id` – Delete prescription
 
 ---
 
-## 💊 Phase 4: Medicine Inventory (Basic)
+## 💊 Phase 4: Medicine Management
 
-- [x] Medicine model (name, type, manufacturer, stock_count, expiry_date)
-- [ ] `POST /medicines` – Add medicine (pharmacist only)
-- [ ] `GET /medicines` – View all medicines
-- [ ] `PUT /medicines/:id` – Update medicine stock/details
-- [ ] `DELETE /medicines/:id` – Remove medicine (optional)
+- [x] Medicine model (name, type, description)
+- [x] `POST /medicines` – Add medicine (pharmacist only)
+- [x] `GET /medicines` – View all medicines
+- [x] `PUT /medicines/:id` – Update medicine details
+- [x] `DELETE /medicines/:id` – Remove medicine
 
 ---
 
