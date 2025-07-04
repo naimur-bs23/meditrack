@@ -29,6 +29,9 @@ export class PrescriptionMedicine extends Model{
     @Column(DataType.INTEGER)
     medicineId!: number;
 
+    @BelongsTo(() => Prescription, 'prescriptionId')
+    prescription!: Prescription;
+
     @BelongsTo(() => Medicine, 'medicineId')
     medicine!: Medicine;
 
@@ -37,4 +40,10 @@ export class PrescriptionMedicine extends Model{
 
     @Column(DataType.STRING)
     instructions!: string;
+
+    @Column(DataType.INTEGER)
+    durationDays!: number;
+
+    @Column(DataType.JSON)
+    scheduleTimes?: string[];
 }

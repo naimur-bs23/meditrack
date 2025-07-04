@@ -27,25 +27,41 @@ prescriptionRouter.use(authenticate);
  *       type: object
  *       required:
  *         - patientId
- *         - medicineList
- *         - dosage
- *         - instructions
+ *         - prescriptionMedicines
  *         - date
  *       properties:
  *         patientId:
  *           type: integer
  *           example: 1
- *         medicineList:
+ *         prescriptionMedicines:
  *           type: array
  *           items:
- *             type: string
- *           example: ["Paracetamol", "Amoxicillin"]
- *         dosage:
- *           type: string
- *           example: "2 tablets twice a day"
- *         instructions:
- *           type: string
- *           example: "Take after meals"
+ *             type: object
+ *             required:
+ *               - medicineId
+ *               - dosage
+ *               - instructions
+ *               - durationDays
+ *               - scheduleTimes
+ *             properties:
+ *               medicineId:
+ *                 type: integer
+ *                 example: 1
+ *               dosage:
+ *                 type: string
+ *                 example: "500 mg"
+ *               instructions:
+ *                 type: string
+ *                 example: "Take after meal"
+ *               durationDays:
+ *                 type: integer
+ *                 example: 7
+ *               scheduleTimes:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+ *                 example: ["08:00", "20:00"]
  *         date:
  *           type: string
  *           format: date
@@ -60,14 +76,6 @@ prescriptionRouter.use(authenticate);
  *           type: integer
  *         patientId:
  *           type: integer
- *         medicineList:
- *           type: array
- *           items:
- *             type: string
- *         dosage:
- *           type: string
- *         instructions:
- *           type: string
  *         date:
  *           type: string
  *           format: date
@@ -77,6 +85,28 @@ prescriptionRouter.use(authenticate);
  *         updatedAt:
  *           type: string
  *           format: date-time
+ *         prescriptionMedicines:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/PrescriptionMedicine'
+ *
+ *     PrescriptionMedicine:
+ *       type: object
+ *       properties:
+ *         medicineId:
+ *           type: integer
+ *         dosage:
+ *           type: string
+ *         instructions:
+ *           type: string
+ *         durationDays:
+ *           type: integer
+ *         scheduleTimes:
+ *           type: array
+ *           items:
+ *             type: string
+ *             pattern: '^([01]\\d|2[0-3]):([0-5]\\d)$'
+ *           example: ["08:00", "20:00"]
  */
 
 /**
