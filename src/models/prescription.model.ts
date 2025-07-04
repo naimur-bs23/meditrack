@@ -1,17 +1,19 @@
 import {
     AllowNull,
     AutoIncrement,
-    BelongsTo,
+    BelongsTo, BelongsToMany,
     Column,
     CreatedAt,
     DataType,
-    ForeignKey,
+    ForeignKey, HasMany,
     Model,
     PrimaryKey,
     Table,
     UpdatedAt
 } from 'sequelize-typescript';
 import { User } from './user.model';
+import {PrescriptionMedicine} from "./prescription-medicine.model";
+import {Medicine} from "./medicine.model";
 
 @Table({
     tableName: 'prescriptions',
@@ -39,18 +41,11 @@ export class Prescription extends Model {
     @BelongsTo(() => User, 'patientId')
     patient!: User;
 
-    // TODO: Use Medicine Model when available
-    @AllowNull(false)
-    @Column(DataType.ARRAY(DataType.STRING))
-    medicineList!: string[];
+    @HasMany(() => PrescriptionMedicine)
+    prescriptionMedicines!: PrescriptionMedicine[];
 
-    @AllowNull(false)
-    @Column(DataType.STRING)
-    dosage!: string;
-
-    @AllowNull(false)
-    @Column(DataType.STRING)
-    instructions!: string;
+    @BelongsToMany(() => Medicine, () => PrescriptionMedicine)
+    medicines!: Medicine[];
 
     @AllowNull(false)
     @Column(DataType.DATE)
