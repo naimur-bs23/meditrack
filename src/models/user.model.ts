@@ -39,6 +39,9 @@ export class User extends Model {
     @Column(DataType.STRING)
     email!: string;
 
+    @Column(DataType.STRING)
+    telegramUsername!: string;
+
     @AllowNull(false)
     @Column(DataType.STRING)
     password!: string;
