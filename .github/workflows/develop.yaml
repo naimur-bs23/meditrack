@@ -18,4 +18,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Docker Build
-        run: docker build -t meditrack:latest .
+        run: |
+          docker build -t thenafiz/meditrack:latest .
+
+      - name: Docker login
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u thenafiz --password-stdin 
+
+      - name: Docker Push
+        run: |
+          docker push thenafiz/meditrack:latest
